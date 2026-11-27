@@ -8,8 +8,12 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8mb4", $user, $pass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    // Registra o erro técnico no log do servidor e exibe mensagem genérica
-    error_log("Erro crítico de conexão: " . $e->getMessage());
-    die("Serviço temporariamente indisponível. Tente novamente em instantes.");
+    error_log("Falha na conexão com o banco: " . $e->getMessage());
+    http_response_code(500);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode([
+        'sucesso'  => false,
+        'mensagem' => 'Erro interno. Tente novamente mais tarde.'
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
 }
-?>
